@@ -19,11 +19,14 @@ namespace Excel.Fundemenetals
             [Option('o', "output", Required = true, HelpText = "File to Write to")]
             public string OutputFile { get; set; }
 
-            [Option('l', "lines", Required = false, HelpText = "Number of lines to samples from master", Default = 100)]
+            [Option('l', "lines", Required = false, HelpText = "Number of lines for each sample from master", Default = 100)]
             public int LinesCount { get; set; }
 
             [Option('s', "seed", Required = false, HelpText = "The Random seed from which the sample will be created", Default = 0)]
             public int Seed { get; set; }
+
+            [Option('n', "no_of_samples", Required = false, HelpText = "How many samples files to create", Default = 1)]
+            public int SamplesDatasetsCount { get; set; }
         }
 
         static void Main(string[] args)
@@ -43,8 +46,13 @@ namespace Excel.Fundemenetals
 
             var filename = Path.GetFileNameWithoutExtension(options.OutputFile);
             var extension = Path.GetExtension(options.OutputFile);
-            for (int i = 0; i < 20; i++)
-                sampler.CreateSample($"{filename}{i:00}{extension}", options.LinesCount, options.Seed + i, new ProgressBar());
+            for (int i = 1; i <= options.SamplesDatasetsCount; i++)
+            {
+                Console.Write($"Sample {i}:");
+                sampler.CreateSample($"{filename}{i:00}{extension}", options.LinesCount, options.Seed + i,
+                    new ProgressBar());
+                Console.WriteLine();
+            }
         }
     }
 }

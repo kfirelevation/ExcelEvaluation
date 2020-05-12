@@ -2,7 +2,7 @@
   "profiles": {
     "SampleData": {
       "commandName": "Project",
-      "commandLineArgs": "--source BikeStoreMaster.xlsx --output BikeStoreSample.xlsx",
+      "commandLineArgs": "--source BikeStoreMaster.xlsx --output BikeStoreSample.xlsx -n 15",
       "workingDirectory": "./../Fundementals/Data",
       "remoteDebugEnabled": false
     }
