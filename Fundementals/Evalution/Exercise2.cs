@@ -14,18 +14,24 @@ namespace ExcelFundamentalsEvalution
         {
             var directory = Environment.CurrentDirectory;
             directory += @"\..\..\..\..\Solution\";
-            var file_path = directory + filename;
-            workbook = new XLWorkbook(file_path);
+            workbookFilename = directory + filename;
+        }
+
+        private IXLWorksheet sheet;
+        private XLWorkbook workbook;
+        private readonly string workbookFilename;
+
+        [OneTimeSetUp]
+        public void Setup()
+        {
+            workbook = new XLWorkbook(workbookFilename);
             sheet = workbook.Worksheets.Worksheet(1);
         }
 
-        private readonly IXLWorksheet sheet;
-        private readonly XLWorkbook workbook;
-
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
-//            workbook.Dispose();
+            workbook.Dispose();
         }
 
         [Test]

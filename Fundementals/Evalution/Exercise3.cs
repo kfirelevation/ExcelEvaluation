@@ -14,18 +14,24 @@ namespace ExcelFundamentalsEvalution
         {
             var directory = Environment.CurrentDirectory;
             directory += @"\..\..\..\..\Solution\";
-            var file_path = directory + filename;
-            workbook = new XLWorkbook(file_path);
+            workbookFilename = directory + filename;
+        }
+
+        private IXLWorksheet sheet;
+        private XLWorkbook workbook;
+        private readonly string workbookFilename;
+
+        [OneTimeSetUp]
+        public void Setup()
+        {
+            workbook = new XLWorkbook(workbookFilename);
             sheet = workbook.Worksheets.Worksheet(1);
         }
 
-        private readonly IXLWorksheet sheet;
-        private readonly XLWorkbook workbook;
-
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
-            //workbook.Dispose();
+            workbook.Dispose();
         }
 
         [Test]
@@ -108,6 +114,56 @@ namespace ExcelFundamentalsEvalution
                     $"R[-1]C:R[-{row_idx - 2}]C"
             };
             Assert.IsTrue(expected_reference.Any(s => cell.FormulaR1C1.Contains(s)), 
+                $"Cell {cell.Address} formula is not referencing the correct range");
+        }
+
+        [Test]
+        public void TestTotalOrderId()
+        {
+            var last_row = sheet.LastRowUsed().RowNumber();
+            var row_idx = 2;
+            var cur_row = sheet.Row(row_idx);
+            var cell = cur_row.Cell((int)BikeStoreSheetCols.ItemId);
+            int cell_expected_val = 0;
+
+            for (; row_idx < last_row; row_idx++)
+            {
+                cur_row = sheet.Row(row_idx);
+                cell = cur_row.Cell((int)BikeStoreSheetCols.ItemId);
+
+                // Format is not required for this column.
+
+                cell_expected_val += cur_row.Cell((int)BikeStoreSheetCols.ItemId).GetValue<int>() == 1
+                        ? 1
+                        : 0;
+            }
+
+            cur_row = sheet.Row(row_idx);
+            cell = cur_row.Cell((int)BikeStoreSheetCols.OrderId);
+
+
+            // test if the value is a number 
+            Assert.IsTrue(int.TryParse(cell.CachedValue.ToString(), out var cell_actual_val), $"Cell {cell.Address} value is not a number");
+
+            // test if the value is correct. 
+            Assert.That(cell_actual_val, Is.EqualTo(cell_expected_val), $"Cell {cell.Address} value should be {cell_actual_val} but it is {cell_actual_val}");
+
+            // because there could be many variations of this formula, we just test if it's a real formula. 
+            Assert.IsTrue(cell.HasFormula, $"Cell {cell.Address} should be formula");
+
+            string[] expected_formula =
+            {
+                "COUNTIF", "SUMIF"
+            };
+
+            Assert.IsTrue(expected_formula.Any(s => cell.FormulaR1C1.Contains(s)),
+                $"Cell {cell.Address} formula should include COUNTIF function");
+            string[] expected_reference =
+            {
+                    $"R[-{row_idx - 2}]C[1]:R[-1]C[1]",
+                    $"R[-1]C[1]:R[-{row_idx - 2}]C[1]"
+            };
+            Assert.IsTrue(expected_reference.Any(s => cell.FormulaR1C1.Contains(s)),
                 $"Cell {cell.Address} formula is not referencing the correct range");
         }
     }

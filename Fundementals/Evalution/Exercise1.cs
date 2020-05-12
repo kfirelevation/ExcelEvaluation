@@ -5,20 +5,32 @@ using NUnit.Framework;
 
 namespace ExcelFundamentalsEvalution
 {
-    [TestFixture]
+    [TestFixture("BikeStoreSample.xlsx")]
     public class Exercise1
     {
-        [SetUp]
-        public void Setup()
+        public Exercise1(string filename)
         {
             var directory = Environment.CurrentDirectory;
             directory += @"\..\..\..\..\Solution\";
-            var file_path = directory + "BikeStoreSample.xlsx";
-            var workbook = new XLWorkbook(file_path);
-            sheet = workbook.Worksheets.Worksheet(1);
+            workbookFilename = directory + filename;
         }
 
         private IXLWorksheet sheet;
+        private XLWorkbook workbook;
+        private readonly string workbookFilename;
+
+        [OneTimeSetUp]
+        public void Setup()
+        {
+            workbook = new XLWorkbook(workbookFilename);
+            sheet = workbook.Worksheets.Worksheet(1);
+        }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            workbook.Dispose();
+        }
 
         [Test]
         public void TestColumnListPrice()
