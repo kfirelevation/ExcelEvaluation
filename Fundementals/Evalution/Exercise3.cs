@@ -7,19 +7,21 @@ using NUnit.Framework;
 
 namespace ExcelFundenmentalsEvalution
 {
-    public class Exercise2
+    [TestFixture("BikeStoreSample.xlsx")]
+    public class Exercise3
     {
-        [SetUp]
-        public void Setup()
+        public Exercise3(string filename)
         {
             var directory = Environment.CurrentDirectory;
             directory += @"\..\..\..\..\Solution\";
-            var file_path = directory + "BikeStoreSample.xlsx";
-            var workbook = new XLWorkbook(file_path);
+            var file_path = directory + filename;
+            workbook = new XLWorkbook(file_path);
             sheet = workbook.Worksheets.Worksheet(1);
         }
 
-        private IXLWorksheet sheet;
+        private readonly IXLWorksheet sheet;
+        private readonly XLWorkbook workbook;
+
         enum BikeStoreSheetCols
         {
             OrderId = 1,
@@ -36,6 +38,12 @@ namespace ExcelFundenmentalsEvalution
             SalesMan = 13, 
             OldModel = 16
         };
+
+        [TearDown]
+        public void ClosedWorkbook()
+        {
+            workbook.Dispose();
+        }
 
         [Test]
         public void TestColumnOldModel()
