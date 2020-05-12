@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ExcelFundementalsEvalution": {
+      "commandName": "Project",
+      "workingDirectory": "./../Solution"
+    }
+  }
+}
