@@ -1,8 +1,8 @@
 using System;
 using System.IO;
 using ClosedXML.Excel;
-using Newtonsoft.Json.Linq;
 using NPOI.SS.UserModel;
+using NPOI.Util;
 using NUnit.Framework;
 
 namespace Excel.Evaluation.Intermediate
@@ -17,67 +17,84 @@ namespace Excel.Evaluation.Intermediate
             workbookFilename = directory + filename;
         }
 
-        private IXLWorksheet sheet;
-        private XLWorkbook workbook;
+        private ISheet sheet;
+        IWorkbook workbook;
         private readonly string workbookFilename;
 
         [OneTimeSetUp]
         public void Setup()
         {
-            workbook = new XLWorkbook(workbookFilename);
-            sheet = workbook.Worksheets.Worksheet(1);
-        }
-
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            workbook.Dispose();
-        }
-
-//        [Test]
-        public void TestGlobalSales()
-        {
-            for (var row_idx = 2; row_idx < sheet.LastRowUsed().RowNumber(); row_idx++)
-            {
-                var cur_row = sheet.Row(row_idx);
-                var cell = cur_row.Cell((int)VideoGameSalesSheetCols.GlobalSales);
-
-                Assert.IsTrue(cell.TryGetValue<double>(out var cell_actual_val), $"Cell {cell.Address} value is not a number");
-
-                continue;
-
-                double expected_val = 0;
-                for (var j = (int) VideoGameSalesSheetCols.NaSales; j <= (int) VideoGameSalesSheetCols.OtherSales; j++)
-                    expected_val += cur_row.Cell(j).GetDouble();
-
-                Assert.IsTrue(cell.HasFormula, $"Cell {cell.Address} should be formula");
-
-                Assert.That(cell_actual_val, Is.EqualTo(expected_val).Within(0.01),
-                    $"Cell {cell.Address} value should be {expected_val} but it is {cell_actual_val}");
-            }
-        }
-
-
-        [Test]
-        public void TestGlobalSalesNpoi()
-        {
-            IWorkbook workbook;
-            //Write the stream data of workbook to the root directory
             using (var stream = new FileStream(workbookFilename, FileMode.Open, FileAccess.ReadWrite))
             {
                 workbook = WorkbookFactory.Create(stream);
                 stream.Close();
             }
+            sheet = workbook.GetSheetAt(0);
+        }
 
-            var npoi_sheet = workbook.GetSheetAt(0);
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            workbook.Close();
+        }
 
+        [Test]
+        public void TestYearColumn()
+        {
+            // first the range in the first column; 
+            for (int row_idx = 1; row_idx <= sheet.LastRowNum; row_idx++)
+            {
+                var cur_row = sheet.GetRow(row_idx);
+                var cell = cur_row.Cells[(int) VideoGameSalesSheetCols.Year - 1];
+
+                Assert.IsTrue(cell.CellType == CellType.Numeric, $"Cell {cell.Address} should be numeric");
+            }
+        }
+
+        [Test]
+        public void TestTableSort()
+        {
+            // it is a dependency, so we run it before this. 
+            TestYearColumn();
+
+            var row_idx = 1;
+            var cur_row = sheet.GetRow(row_idx);
+            var prev_vgd = new VideoGameDetails()
+            {
+                Year = (int) cur_row.Cells[(int) VideoGameSalesSheetCols.Year - 1].NumericCellValue,
+                Genre = cur_row.Cells[(int) VideoGameSalesSheetCols.Genre - 1].StringCellValue,
+                Platform = cur_row.Cells[(int) VideoGameSalesSheetCols.Platform - 1].ToString(),
+                Rank = (int) cur_row.Cells[(int) VideoGameSalesSheetCols.Rank - 1].NumericCellValue
+            };
+
+            for (row_idx = 2; row_idx <= sheet.LastRowNum; row_idx++)
+            {
+                cur_row = sheet.GetRow(row_idx);
+
+                var cur_vgd = new VideoGameDetails()
+                {
+                    Year = (int)cur_row.Cells[(int)VideoGameSalesSheetCols.Year - 1].NumericCellValue,
+                    Genre = cur_row.Cells[(int)VideoGameSalesSheetCols.Genre - 1].StringCellValue,
+                    Platform = cur_row.Cells[(int)VideoGameSalesSheetCols.Platform - 1].ToString(),
+                    Rank = (int)cur_row.Cells[(int)VideoGameSalesSheetCols.Rank - 1].NumericCellValue
+                };
+
+                Assert.GreaterOrEqual(cur_vgd, prev_vgd, $"Table is not ordered correctly see row {cur_row.RowNum}");
+
+                prev_vgd = cur_vgd;
+            }
+        }
+
+        [Test]
+        public void TestGlobalSalesValues()
+        {
             int count = 0;
-            var max_count = (double)npoi_sheet.LastRowNum;
+            var max_count = (double)sheet.LastRowNum;
 
             // first the range in the first column; 
-            for (int row_idx = 1; row_idx <= npoi_sheet.LastRowNum; row_idx++)
+            for (int row_idx = 1; row_idx <= sheet.LastRowNum; row_idx++)
             {
-                var cur_row = npoi_sheet.GetRow(row_idx);
+                var cur_row = sheet.GetRow(row_idx);
                 var cell = cur_row.Cells[(int)VideoGameSalesSheetCols.GlobalSales - 1];
                 count++;
 
@@ -86,9 +103,11 @@ namespace Excel.Evaluation.Intermediate
                     expected_val += cur_row.Cells[(j - 1)].NumericCellValue;
 
                 Assert.IsTrue(cell.CellType == CellType.Formula, $"Cell {cell.Address} should be formula");
+                Assert.IsTrue(cell.CachedFormulaResultType == CellType.Numeric,
+                    $"Cell {cell.Address} formula result should be numeric");
 
                 Assert.That(cell.NumericCellValue, Is.EqualTo(expected_val).Within(0.01),
-                    $"Cell {cell.Address} value should be {expected_val} but it is {expected_val}");
+                    $"Cell {cell.Address} value should be {expected_val} but it is {cell.NumericCellValue}");
             }
         }
     }
