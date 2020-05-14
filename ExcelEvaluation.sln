@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleData", "SampleData\SampleData.csproj", "{1C0F443E-8DB8-48B6-9B50-77956AA2E373}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelFundementalsEvalution", "Fundementals\Evalution\ExcelFundementalsEvalution.csproj", "{DE868897-C71E-48D1-8CEF-17F63F5D2610}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelFundementalsEvalution", "Fundementals\Evaluation\ExcelFundementalsEvalution.csproj", "{DE868897-C71E-48D1-8CEF-17F63F5D2610}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
