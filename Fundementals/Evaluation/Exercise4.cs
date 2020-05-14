@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using ClosedXML.Excel;
-      
 using NUnit.Framework;
 
-namespace ExcelFundamentalsEvalution
+namespace Excel.Evaluation.Fundamentals
 {
     [TestFixture("BikeStoreSample.xlsx")]
     public class Exercise4

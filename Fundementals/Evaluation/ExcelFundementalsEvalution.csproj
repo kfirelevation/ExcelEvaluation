@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <AssemblyName>Excel.Evaluation.Fundamentals</AssemblyName>
+
+    <RootNamespace>Excel.Evaluation.Fundamentals</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

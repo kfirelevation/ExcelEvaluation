@@ -2,8 +2,7 @@ using System;
 using ClosedXML.Excel;
 using NUnit.Framework;
 
-
-namespace ExcelFundamentalsEvalution
+namespace Excel.Evaluation.Fundamentals
 {
     [TestFixture("BikeStoreSample.xlsx")]
     public class Exercise1
@@ -35,7 +34,7 @@ namespace ExcelFundamentalsEvalution
         [Test]
         public void TestColumnListPrice()
         {
-            for (int row_idx = 2; row_idx < sheet.LastRowUsed().RowNumber(); row_idx++)
+            for (var row_idx = 2; row_idx < sheet.LastRowUsed().RowNumber(); row_idx++)
             {
                 var cur_row = sheet.Row(row_idx);
                 var cell = cur_row.Cell((int) BikeStoreSheetCols.ListPrice);
@@ -47,7 +46,7 @@ namespace ExcelFundamentalsEvalution
         [Test]
         public void TestColumnDiscount()
         {
-            for (int row_idx = 2; row_idx < sheet.LastRowUsed().RowNumber(); row_idx++)
+            for (var row_idx = 2; row_idx < sheet.LastRowUsed().RowNumber(); row_idx++)
             {
                 var cur_row = sheet.Row(row_idx);
                 var cell = cur_row.Cell((int)BikeStoreSheetCols.Discount);
@@ -87,7 +86,7 @@ namespace ExcelFundamentalsEvalution
         [Test]
         public void TestLineTotalAfterDiscount()
         {
-            for (int row_idx = 2; row_idx < sheet.LastRowUsed().RowNumber(); row_idx++)
+            for (var row_idx = 2; row_idx < sheet.LastRowUsed().RowNumber(); row_idx++)
             {
                 var cur_row = sheet.Row(row_idx);
                 var cell = cur_row.Cell((int)BikeStoreSheetCols.LineTotalAfterDiscount);

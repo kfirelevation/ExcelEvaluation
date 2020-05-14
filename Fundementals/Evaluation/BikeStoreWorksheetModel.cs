@@ -1,5 +1,5 @@
 ﻿
-namespace ExcelFundamentalsEvalution
+namespace Excel.Evaluation.Fundamentals
 {
     enum BikeStoreSheetCols
     {
