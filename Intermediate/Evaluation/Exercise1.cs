@@ -1,9 +1,7 @@
+using NPOI.SS.UserModel;
+using NUnit.Framework;
 using System;
 using System.IO;
-using ClosedXML.Excel;
-using NPOI.SS.UserModel;
-using NPOI.Util;
-using NUnit.Framework;
 
 namespace Excel.Evaluation.Intermediate
 {

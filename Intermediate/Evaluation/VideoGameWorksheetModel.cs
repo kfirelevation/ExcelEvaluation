@@ -1,6 +1,12 @@
 ﻿
 using System;
-using NPOI.OpenXmlFormats.Dml.Diagram;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using DocumentFormat.OpenXml.Presentation;
+using NPOI.SS.UserModel;
+using NUnit.Framework;
 
 namespace Excel.Evaluation.Intermediate
 {
@@ -24,6 +30,7 @@ namespace Excel.Evaluation.Intermediate
         public int Year { get; set; }
         public string Genre { get; set; }
         public string Platform { get; set; }
+        public string Publisher { get; set; }
         public int Rank { get; set; }
 
         public int CompareTo(object? obj)
@@ -42,6 +49,39 @@ namespace Excel.Evaluation.Intermediate
             if (platform_comparison != 0)
                 return platform_comparison;
             return Rank.CompareTo(other.Rank);
+        }
+    }
+
+    class VideoGameDetailsCollection : IEnumerable<VideoGameDetails>
+    {
+        private readonly IDictionary<int, VideoGameDetails> collection; 
+        public VideoGameDetailsCollection(ISheet sheet)
+        {
+            collection = new Dictionary<int, VideoGameDetails>();
+            for (var row_idx = 1; row_idx <= sheet.LastRowNum; row_idx++)
+            {
+                var cur_row = sheet.GetRow(row_idx);
+                var cur_vgd = new VideoGameDetails()
+                {
+                    Year = (int)cur_row.Cells[(int)VideoGameSalesSheetCols.Year - 1].NumericCellValue,
+                    Genre = cur_row.Cells[(int)VideoGameSalesSheetCols.Genre - 1].StringCellValue,
+                    Platform = cur_row.Cells[(int)VideoGameSalesSheetCols.Platform - 1].ToString(),
+                    Rank = (int)cur_row.Cells[(int)VideoGameSalesSheetCols.Rank - 1].NumericCellValue,
+                    Publisher = cur_row.Cells[(int)VideoGameSalesSheetCols.Publisher - 1].StringCellValue
+                };
+                collection.Add(row_idx, cur_vgd);
+            }
+        }
+
+        public VideoGameDetails this[int index] => collection[index];
+        public IEnumerator<VideoGameDetails> GetEnumerator()
+        {
+            return collection.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return collection.Values.GetEnumerator();
         }
     }
 }
