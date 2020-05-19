@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleData", "SampleData\Sa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelFundementalsEvalution", "Fundementals\Evaluation\ExcelFundementalsEvalution.csproj", "{DE868897-C71E-48D1-8CEF-17F63F5D2610}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelIntermediateEvaluation", "Intermediate\Evaluation\ExcelIntermediateEvaluation.csproj", "{D8E6A248-600C-4D4E-A5C6-9F495ECF7BAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{DE868897-C71E-48D1-8CEF-17F63F5D2610}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE868897-C71E-48D1-8CEF-17F63F5D2610}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE868897-C71E-48D1-8CEF-17F63F5D2610}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8E6A248-600C-4D4E-A5C6-9F495ECF7BAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8E6A248-600C-4D4E-A5C6-9F495ECF7BAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8E6A248-600C-4D4E-A5C6-9F495ECF7BAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8E6A248-600C-4D4E-A5C6-9F495ECF7BAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
