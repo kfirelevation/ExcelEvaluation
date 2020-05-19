@@ -32,6 +32,7 @@ namespace Excel.Evaluation.Intermediate
         public string Platform { get; set; }
         public string Publisher { get; set; }
         public int Rank { get; set; }
+        public double GlobalSales { get; set; }
 
         public int CompareTo(object? obj)
         {
@@ -67,7 +68,8 @@ namespace Excel.Evaluation.Intermediate
                     Genre = cur_row.Cells[(int)VideoGameSalesSheetCols.Genre - 1].StringCellValue,
                     Platform = cur_row.Cells[(int)VideoGameSalesSheetCols.Platform - 1].ToString(),
                     Rank = (int)cur_row.Cells[(int)VideoGameSalesSheetCols.Rank - 1].NumericCellValue,
-                    Publisher = cur_row.Cells[(int)VideoGameSalesSheetCols.Publisher - 1].StringCellValue
+                    Publisher = cur_row.Cells[(int)VideoGameSalesSheetCols.Publisher - 1].StringCellValue,
+                    GlobalSales = cur_row.Cells[(int)VideoGameSalesSheetCols.GlobalSales - 1].NumericCellValue
                 };
                 collection.Add(row_idx, cur_vgd);
             }
