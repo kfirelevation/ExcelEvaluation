@@ -4,7 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DocumentFormat.OpenXml.Office.CustomUI;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using CellType = NPOI.SS.UserModel.CellType;
 
 namespace Excel.Evaluation.Intermediate
 {
@@ -140,11 +143,29 @@ namespace Excel.Evaluation.Intermediate
             }
         }
 
+
+        [Test]
         public void TestPieChart()
         {
-            var w = new ClosedXML.Excel.XLWorkbook();
-            var sheet = w.Worksheets.Worksheet(1);
+            var document = SpreadsheetDocument.Open(workbookFilename, true);
+            var sheets = document.WorkbookPart.Workbook.Descendants<Sheet>().Where
+                (s => s.Name == "Genres");
+            if (!sheets.Any())
+            {
+                // The specified worksheet does not exist.
+                return;
+            }
+            var worksheetPart = (WorksheetPart)document.WorkbookPart.GetPartById(sheets.First().Id);
 
+            var charts = worksheetPart.DrawingsPart.ChartParts;
+
+            // Add a new drawing to the worksheet.
+            Assert.AreEqual(charts.Count(), 2, "Worksheet should include two pie charts");
+            foreach (var chart in charts )
+            {
+                Assert.AreEqual(1, chart.ChartSpace.Descendants<PlotArea>().First().Descendants<PieChart>().Count(),
+                    "Chart style is not PieChart");
+            }
         }
     }
 }
