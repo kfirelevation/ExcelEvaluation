@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
@@ -44,26 +45,6 @@ namespace Excel.Evaluation.Intermediate
         {
             workbook.Close();
         }
-
-        //[Test]
-        public void TestStrategyTabTableValues()
-        {
-//            TestTabSortFormula(2);
-            var sheet = workbook.GetSheetAt(2);
-            int prev_rank = 0;
-            int actual_row_count = 0;
-            for (var row_idx = 1; row_idx <= sheet.LastRowNum; row_idx++)
-            {
-                var cur_row = sheet.GetRow(row_idx);
-
-                var genre_cell = cur_row.Cells[(int) VideoGameSalesSheetCols.Genre - 1];
-                Assert.AreEqual("Strategy", genre_cell.StringCellValue, $"row {cur_row.RowNum} contains game from Genre {genre_cell.StringCellValue} ");
-                actual_row_count++;
-            }
-            var expect_count = rawData.Count(v => string.Compare(v.Genre, "Strategy", StringComparison.OrdinalIgnoreCase) == 0);
-            Assert.AreEqual(expect_count, actual_row_count, $"rows count after filter should be {expect_count} but it is {actual_row_count} ");
-        }
-
 
         [Test]
         public void TestPlatformColumn()
@@ -146,11 +127,6 @@ namespace Excel.Evaluation.Intermediate
             Assert.AreEqual(actual_distinct_count, values.Count, "Some years appears more than once");
 
             var expect_distinct_count = rawData.Select(x => x.Year).Distinct().Count();
-            var years_array = rawData.Select(x => x.Year).Distinct().ToArray();
-            foreach (var y in years_array)
-            {
-                Console.WriteLine(y);    
-            }
             Assert.AreEqual(expect_distinct_count, actual_distinct_count, $"wrong number of years found {expect_distinct_count} but there is {actual_distinct_count}");
         }
 
@@ -191,7 +167,6 @@ namespace Excel.Evaluation.Intermediate
             }
         }
 
-
         [Test]
         public void TestLineChart()
         {
@@ -208,11 +183,14 @@ namespace Excel.Evaluation.Intermediate
             var charts = worksheetPart.DrawingsPart.ChartParts;
 
             // Add a new drawing to the worksheet.
-            Assert.AreEqual(charts.Count(), 1, "Worksheet should include two pie charts");
-            foreach (var chart in charts )
+            Assert.AreEqual(charts.Count(), 1, "Worksheet should include one line charts");
+
+            foreach (var chart in charts)
             {
-                Assert.AreEqual(1, chart.ChartSpace.Descendants<PlotArea>().First().Descendants<LineChart>().Count(),
-                    "Chart style is not PieChart");
+                var arr = chart.ChartSpace.Descendants<PlotArea>().First().Descendants<OpenXmlCompositeElement>().ToArray();
+                var allowed_chart_types = new List<Type>() { typeof(LineChart), typeof(ScatterChart), typeof(AreaChart)};
+                var result = arr.FirstOrDefault(e => allowed_chart_types.Contains(e.GetType()));
+                Assert.IsNotNull(result, "Wrong Chart type");
             }
         }
     }
